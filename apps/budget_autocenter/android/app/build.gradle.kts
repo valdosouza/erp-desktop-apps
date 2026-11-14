@@ -1,8 +1,23 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
+}
+
+// Chave de upload do Play: fica no cofre fora do repositório
+// (D:/Vault/.segredos, ou a pasta apontada por SETES_SEGREDOS).
+// O key.properties de lá traz storeFile com caminho absoluto.
+val segredosDir = System.getenv("SETES_SEGREDOS") ?: "D:/Vault/.segredos"
+val keystorePropertiesFile = file("$segredosDir/android/budget_autocenter/key.properties")
+val keystoreProperties = Properties().apply {
+    if (keystorePropertiesFile.exists()) {
+        keystorePropertiesFile.inputStream().use { load(it) }
+    }
 }
 
 android {
@@ -16,8 +31,8 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.setes.budget_autocenter"
+        // Definitivo na Play Store: não pode mudar depois do primeiro envio.
+        applicationId = "com.setes.budgetautocenterapp"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 24
@@ -30,12 +45,33 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        if (keystorePropertiesFile.exists()) {
+            create("release") {
+                storeFile = file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // Sem o cofre não há config de release e o build falha (abaixo):
+            // nunca sai um release assinado com a chave debug.
+            signingConfig = signingConfigs.findByName("release")
         }
+    }
+}
+
+gradle.taskGraph.whenReady {
+    val buildsRelease = allTasks.any { it.name.contains("Release") }
+    if (buildsRelease && !keystorePropertiesFile.exists()) {
+        throw GradleException(
+            "Release precisa da chave de upload em ${keystorePropertiesFile.path} " +
+                "(cofre .segredos; defina SETES_SEGREDOS se estiver em outra pasta)."
+        )
     }
 }
 
