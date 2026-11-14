@@ -1,0 +1,85 @@
+# Segurança dos dados (Play Console › Conteúdo do app › Segurança dos dados)
+#
+# RASCUNHO 2026-11-14, montado a partir do código. Itens # REVISAR precisam do Valdo.
+# O Console importa/exporta essas respostas em CSV com IDs próprios do Google;
+# na primeira execução o agente `criar-app-play` exporta o modelo do Console,
+# preenche a partir deste arquivo e importa (formato do CSV muda com o tempo,
+# por isso a fonte versionada é este YAML).
+#
+# Base técnica do que sai do aparelho:
+# - ERP do cliente: o app envia login e orçamentos (clientes, veículos, itens,
+#   checklist) ao servidor do ERP Gestão INSTALADO NA EMPRESA DO CLIENTE, por
+#   HTTP na rede local (android:usesCleartextTraffic=true). Não passa pela Setes.
+# - Firebase (Google): Crashlytics no app; o core também traz
+#   firebase_analytics e firebase_performance, que coletam automaticamente
+#   assim que o Firebase é inicializado.
+
+coleta_ou_compartilha_dados: true
+
+criptografia_em_transito: false   # tráfego com o ERP é HTTP na rede local.
+                                  # Se o ERP passar a usar HTTPS, mudar para true.
+
+exclusao_de_dados:
+  conta_criada_no_app: false      # usuários são criados no ERP, não no app
+  # Sem criação de conta no app, o Google não exige URL de exclusão de conta.
+  usuario_pode_pedir_exclusao: true   # REVISAR: via suporte da Setes / admin do ERP
+
+tipos_de_dados:
+
+  informacoes_pessoais:
+    nome:
+      coletado: true      # nome do cliente da oficina e do usuário
+      compartilhado: false
+      processamento_efemero: false
+      obrigatorio: true
+      finalidades: [funcionalidade_do_app]
+    email:
+      coletado: false     # o app só RECEBE e-mail/CNPJ do cliente do ERP (customer_model);
+                          # não envia. Receber não é coleta para o Google. REVISAR se mudar.
+    telefone:
+      coletado: false     # REVISAR: o cadastro de cliente envia telefone?
+    endereco:
+      coletado: false     # REVISAR
+    ids_de_usuario:
+      coletado: true      # usuário/login do ERP
+      compartilhado: false
+      obrigatorio: true
+      finalidades: [funcionalidade_do_app, gerenciamento_de_conta]
+
+  atividade_no_app:
+    interacoes_no_app:
+      coletado: true      # firebase_analytics (eventos automáticos)
+      compartilhado: false
+      obrigatorio: true
+      finalidades: [analise]
+    outro_conteudo_gerado_pelo_usuario:
+      coletado: true      # orçamentos, observações e checklist do veículo
+      compartilhado: false
+      obrigatorio: true
+      finalidades: [funcionalidade_do_app]
+
+  informacoes_e_desempenho_do_app:
+    registros_de_falhas:
+      coletado: true      # Crashlytics
+      compartilhado: false
+      obrigatorio: true
+      finalidades: [analise]
+    diagnosticos:
+      coletado: true      # firebase_performance
+      compartilhado: false
+      obrigatorio: true
+      finalidades: [analise]
+
+  ids_do_dispositivo_ou_outros:
+    ids_do_dispositivo:
+      coletado: true      # ID de instalação do Firebase / ID da instância do Analytics
+      compartilhado: false
+      obrigatorio: true
+      finalidades: [analise]
+
+  # Não coletados: localização, financeiro, saúde, mensagens, fotos e vídeos,
+  # áudio, arquivos, agenda, contatos, histórico de navegação.
+
+# Observação: "compartilhado: false" porque o Firebase atua como prestador de
+# serviço da Setes e o ERP é do próprio cliente — o Google não considera
+# nenhum dos dois como compartilhamento com terceiros.  # REVISAR

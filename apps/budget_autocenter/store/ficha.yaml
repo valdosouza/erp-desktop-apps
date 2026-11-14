@@ -1,0 +1,108 @@
+# Ficha do app na Google Play — fonte única para os agentes
+# `criar-app-play` (navegador) e `publicar-play` (API).
+#
+# RASCUNHO 2026-11-14: tudo marcado com  # REVISAR  precisa do Valdo.
+# Nunca coloque senha, login ou token aqui: o que é sigiloso fica no cofre
+# (D:/Vault/.segredos) e esta ficha só aponta para o arquivo.
+
+app:
+  application_id: com.setes.budgetautocenterapp   # definitivo, não muda
+  firebase_project: budgetautocenterapp
+  idioma_padrao: pt-BR
+  tipo: app            # app | jogo
+  gratuito: true       # gratuito não pode virar pago depois
+
+# ---------------------------------------------------------------- ficha da loja
+ficha_loja:
+  pt-BR:
+    titulo: "AutoCenter Setes"              # máx. 30 caracteres  # REVISAR
+    descricao_curta: >-                     # máx. 80 caracteres
+      Orçamentos de oficina com peças, mão de obra e checklist do veículo.
+    descricao_completa: |                   # máx. 4000 caracteres
+      O AutoCenter Setes leva o orçamento da oficina para o celular ou tablet,
+      direto no pátio, integrado ao ERP Gestão da Setes.
+
+      Com ele, o consultor técnico:
+      • consulta os orçamentos existentes com filtros e paginação;
+      • cria e edita orçamentos com peças e mão de obra, usando as tabelas de
+        preço e o estoque do ERP;
+      • pesquisa o veículo pela placa ou cadastra marca, modelo, tipo e cor;
+      • faz o checklist de entrada do veículo em 22 regiões, com danos, pneus,
+        nível de combustível e acessórios;
+      • continua de onde parou: o preenchimento fica salvo no aparelho como
+        pendente até ser confirmado;
+      • envia o orçamento completo ao ERP em uma única operação, sem duplicar
+        o documento se a conexão cair no meio do envio.
+
+      Importante: o AutoCenter Setes é de uso exclusivo de clientes do ERP
+      Gestão da Setes. Para usar, é preciso informar o endereço do servidor da
+      sua empresa e entrar com um usuário cadastrado no ERP, com as permissões
+      de orçamento liberadas.
+
+      Dúvidas e suporte: fale com a Setes pelos canais de atendimento.
+  categoria: Empresas          # REVISAR (alternativa: Produtividade)
+  tags: [orçamento, oficina, autocenter]   # o Console sugere a lista; ajustar
+  contato:
+    email: REVISAR@setes.com.br            # obrigatório, público na loja
+    telefone: null                          # opcional
+    site: https://www.setes.com.br          # REVISAR
+
+graficos:                     # arquivos em store/graficos/ (ver README)
+  icone: graficos/icone-512.png
+  destaque: graficos/destaque-1024x500.png
+  telefone: graficos/telefone/              # 2 a 8 capturas
+  tablet_7: graficos/tablet-7/              # opcional
+  tablet_10: graficos/tablet-10/            # opcional
+
+# ------------------------------------------------------------- conteúdo do app
+conteudo_app:
+  politica_privacidade_url: REVISAR        # obrigatória (há login no app)
+
+  anuncios: false
+
+  acesso_ao_app:
+    # Todo o app exige servidor + login. O revisor do Google precisa de acesso
+    # para as trilhas fechada/aberta/produção (o teste interno dispensa).
+    restrito: true
+    instrucoes: |
+      1. Na primeira tela, informe o endereço do servidor de demonstração.
+      2. Selecione o estabelecimento e entre com o usuário e a senha abaixo.
+      3. A lista de orçamentos abre em seguida; toque em um orçamento para ver
+         os detalhes ou em "+" para criar um novo.
+    credenciais_no_cofre: android/budget_autocenter/play-acesso-revisor.yaml  # REVISAR: criar servidor demo
+
+  classificacao_conteudo:      # questionário IARC
+    email_contato: REVISAR@setes.com.br
+    categoria: "Utilitário, produtividade, comunicação ou outro"
+    violencia: false
+    sexualidade_nudez: false
+    linguagem_imprópria: false
+    substancias_controladas: false
+    jogos_de_azar: false
+    usuarios_interagem_entre_si: false
+    compartilha_localizacao: false
+    compras_digitais: false
+    navegador_ou_buscador_web: false
+    # resultado esperado: Livre / 3+ em todas as classificações
+
+  publico_alvo:
+    faixas_etarias: ["18 anos ou mais"]
+    atrai_criancas: false
+
+  app_de_noticias: false
+  app_governamental: false
+  recursos_financeiros: nenhum
+  app_de_saude: false
+  rastreamento_contatos_covid: false
+  seguranca_dados: data-safety.yaml
+
+# ------------------------------------------------------------------- versões
+lancamento:
+  trilha_inicial: internal      # internal | alpha (fechado) | beta (aberto) | production
+  testadores_internos:          # e-mails ou lista do Console  # REVISAR
+    lista: "Setes - equipe"
+  paises: [BR]
+  notas:
+    "1.0.0+1": |
+      Primeira versão: consulta, criação e edição de orçamentos com peças,
+      mão de obra, veículo e checklist de entrada.
