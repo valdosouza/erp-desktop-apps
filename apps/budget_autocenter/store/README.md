@@ -19,10 +19,15 @@ ficha só aponta para o arquivo.
 
 | Arquivo | Formato | Situação |
 |---|---|---|
-| `graficos/icone-512.png` | 512×512, PNG 32 bits, até 1 MB | **falta** — o app ainda usa o ícone padrão do Flutter (precisa trocar também o `ic_launcher`) |
-| `graficos/destaque-1024x500.png` | 1024×500, PNG ou JPG sem transparência | **falta** |
+| `graficos/icone-512.png` | 512×512, PNG 32 bits, até 1 MB | pronto (o `ic_launcher` do app usa a mesma arte, em círculo) |
+| `graficos/destaque-1024x500.png` | 1024×500, PNG ou JPG sem transparência | pronto |
 | `graficos/telefone/*.png` | 2 a 8 capturas, proporção 9:16, lado entre 320 e 3840 px | **falta** |
 | `graficos/tablet-7/`, `graficos/tablet-10/` | opcionais | — |
+
+As artes saem de `graficos/fonte/*.svg` (fonte editável). Para regerar os PNG, renderize os SVG no Edge sem
+interface (`msedge --headless=new --screenshot`) nos tamanhos acima; ícone da loja precisa ser RGBA (32 bits),
+destaque sem transparência, e o `launcher.svg` vai para `android/app/src/main/res/mipmap-*/ic_launcher.png`
+(48, 72, 96, 144 e 192 px).
 
 ## Pendências do rascunho (busque `REVISAR`)
 
